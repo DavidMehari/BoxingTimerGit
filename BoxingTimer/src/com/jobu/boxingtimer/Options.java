@@ -137,7 +137,6 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 		
 	}
 
-	//changes 1
 
 	
 	@Override
