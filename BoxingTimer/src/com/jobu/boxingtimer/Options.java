@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -15,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -23,7 +24,9 @@ import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 
-public class Options extends Activity implements OnClickListener, OnCheckedChangeListener, OnItemSelectedListener, OnSeekBarChangeListener{
+public class Options extends Activity implements OnClickListener,
+		OnCheckedChangeListener, OnItemSelectedListener,
+		OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
 
 	RadioGroup rgRoundLength, rgRestLength;
 	RadioButton selectedRadioButton;
@@ -32,30 +35,36 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 	SharedPreferences sPref;
 	SeekBar sbVolume;
 	AudioManager am;
-	
-	//from Timer
+	CheckBox cbMute, cbSkipWU, cbKeepScr;
+
+	// from Timer
 	private int roundLength;
 	private int restLength;
 	private int totalRounds;
-	
+	// keep screen
+	private boolean keepScr;
+	// mute
+	private boolean mute;
+	// skipWarmp
+	private boolean skipWU;
+
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
-	static int SOUND1 = 1; 
-	
-	
+	static int SOUND1 = 1;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.options);
-		
+
 		init();
-		
+
 		loadPreferences();
 	}
 
 	private void loadPreferences() {
-		
+
 		switch (roundLength) {
 		case 180:
 			rgRoundLength.check(R.id.rbroundLength3min);
@@ -67,8 +76,8 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 			rgRoundLength.check(R.id.rbroundLengthTest);
 			break;
 		}
-		
-		switch(restLength){
+
+		switch (restLength) {
 		case 60:
 			rgRestLength.check(R.id.rbrestLength1min);
 			break;
@@ -79,9 +88,30 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 			rgRestLength.check(R.id.rbrestLengthTest);
 			break;
 		}
-		//setting the spinner state
+		// setting the spinner state
 		spTotalRounds.setSelection(totalRounds - 1);
+
+		// load screen settings
+		if (keepScr) {
+			cbKeepScr.setChecked(true);
+		} else {
+			cbKeepScr.setChecked(false);
+		}
 		
+		// load screen settings
+		if (mute) {
+			cbMute.setChecked(true);
+		} else {
+			cbMute.setChecked(false);
+		}
+		
+		// load screen settings
+		if (skipWU) {
+			cbSkipWU.setChecked(true);
+		} else {
+			cbSkipWU.setChecked(false);
+		}
+
 	}
 
 	private void init() {
@@ -89,11 +119,15 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
 		totalRounds = sPref.getInt("totalRounds", 1);
-		
-		Toast t = Toast.makeText(getApplicationContext(), "load done" + roundLength + " - " + restLength + " - " + totalRounds,
+		keepScr = sPref.getBoolean("keepScr", false);
+		mute = sPref.getBoolean("mute", false);
+		skipWU = sPref.getBoolean("skipWU", false);
+
+		Toast t = Toast.makeText(getApplicationContext(), "load done"
+				+ roundLength + " - " + restLength + " - " + totalRounds,
 				Toast.LENGTH_SHORT);
 		t.show();
-		
+
 		rgRoundLength = (RadioGroup) findViewById(R.id.roundLengthGroup);
 		rgRestLength = (RadioGroup) findViewById(R.id.restLengthGroup);
 
@@ -110,35 +144,38 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spTotalRounds.setAdapter(adapter);
 		spTotalRounds.setOnItemSelectedListener(this);
-		
-		bOK = (Button)findViewById(R.id.bOK);
-		bCancel = (Button)findViewById(R.id.bCancel);
+
+		bOK = (Button) findViewById(R.id.bOK);
+		bCancel = (Button) findViewById(R.id.bCancel);
 		bOK.setOnClickListener(this);
 		bCancel.setOnClickListener(this);
-		
-		//Volume Control
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);		
-		sbVolume = (SeekBar)findViewById(R.id.seekBarVolume);
-		am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-		
+
+		// Volume Control
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		sbVolume = (SeekBar) findViewById(R.id.seekBarVolume);
+		am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
 		int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 		int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-		
+
 		sbVolume.setMax(maxVolume);
 		sbVolume.setProgress(currentVolume);
 		sbVolume.setOnSeekBarChangeListener(this);
-		
-		//soundpool
+
+		// soundpool
 		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
 		soundsMap = new HashMap<Integer, Integer>();
 		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
-		
-		
-		
+
+		cbMute = (CheckBox) findViewById(R.id.cbMute);
+		cbSkipWU = (CheckBox) findViewById(R.id.cbSkipWarmUp);
+		cbKeepScr = (CheckBox) findViewById(R.id.cbKeepScreen);
+
+		cbMute.setOnCheckedChangeListener(this);
+		cbSkipWU.setOnCheckedChangeListener(this);
+		cbKeepScr.setOnCheckedChangeListener(this);
 	}
 
-
-	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -148,22 +185,27 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 			editor.putInt("roundLength", roundLength);
 			editor.putInt("restLength", restLength);
 			editor.putInt("totalRounds", totalRounds);
-			
-			editor.commit();    
-			 
+			editor.putBoolean("keepScr", keepScr);
+			editor.putBoolean("mute", mute);
+			editor.putBoolean("skipWU", skipWU);
+
+			editor.commit();
+
 			finish();
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left );		
-			
+			overridePendingTransition(R.anim.slide_in_right,
+					R.anim.slide_out_left);
+
 			break;
-		
+
 		case R.id.bCancel:
-			
+
 			finish();
-			overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left );
+			overridePendingTransition(R.anim.slide_in_right,
+					R.anim.slide_out_left);
 			break;
 		}
 	}
-	
+
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
 
@@ -187,10 +229,8 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 			restLength = 10;
 			break;
 		}
-//		if (!counterStarted && reseted) {
-//			myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
-//		}
 		
+
 	}
 
 	@Override
@@ -198,43 +238,71 @@ public class Options extends Activity implements OnClickListener, OnCheckedChang
 			long arg3) {
 
 		totalRounds = arg2 + 1;
-	//	roundsDisplay.setText("Rounds: " + currentRounds + "/" + totalRounds);
+		
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onBackPressed() {
-		
+
 		super.onBackPressed();
-		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left );
+		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 	}
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		// TODO Auto-generated method stub
 		am.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
-		
-		
+
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		// TODO Auto-generated method stub
-		
-		
+
 		soundPool.play(soundsMap.get(SOUND1), 1, 1, 1, 0, 1);
 	}
-	
-	
+
+	@Override
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		// TODO Auto-generated method stub
+		switch (buttonView.getId()) {
+		case R.id.cbMute:
+			if (isChecked) {
+				mute = true;
+			} else {
+				mute = false;
+			}
+			break;
+			
+		case R.id.cbSkipWarmUp:
+			if (isChecked) {
+				skipWU = true;
+			} else {
+				skipWU = false;
+			}
+			break;
+			
+		case R.id.cbKeepScreen:
+			if (isChecked) {
+				keepScr = true;
+			} else {
+				keepScr = false;
+			}
+			break;
+
+		}
+	}
+
 }

@@ -14,6 +14,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,59 +25,54 @@ import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+//DONE
 //	- Progress bar under the time
 //	- Volume control
-
-
-//	- Stop watch
-//	- Total time
+//	- Fixed orientation
+//	- Change buttons to layouts
+//	- Monospace digital clock
 //	- Screen Lock
+
+
+//TODO
+//	- Stop watch
 //	- Skip warm up
-
 //	- Mute
-
-
 //	- Show current settings on the timer screen (with icons)
-//	- Landscape or fixed
-
 //	- Run in Notification if started
 //	- Exit (both) finish everything
-
 //	- Run in background problems
-//	- Reset pb1???	on resume set progress to roundlength - timeleft || on pause save state of pb1
-
-//	- Change buttons to layouts
 //	- Sounds
 //	- Exit prompt
-//	- Options with tabs
-
-
-
-
+//	- Options with tabs?
+//	- Timer in landscape also?
+//	- Admob
+//	- Start with accelero
+//	- Grey & white textcolor (white for clickable/grey for text)
 
 public class Timer extends Activity implements OnClickListener {
 
 	static TextView counterDisplay, roundsDisplay;
 	Typeface fontDigitClock, webSymbol;
-	
+
 	static ProgressBar pB1;
-	
+
 	static TextView startText;
 	static TextView startIcon;
-	
+
 	static TextView clearIcon;
 	static TextView optionsIcon;
 	static TextView exitIcon;
-	
+
 	static LinearLayout start;
 	LinearLayout clear;
-	LinearLayout options; 
+	LinearLayout options;
 	LinearLayout exit;
-	
+
 	static MyCountDownTimer myCountDownTimer;
 	static boolean counterStarted = false;
 	static boolean counterEverStarted = false;
-	
+
 	boolean reseted = true;
 	static boolean isRest = true;
 
@@ -86,7 +83,7 @@ public class Timer extends Activity implements OnClickListener {
 	static int currentRounds = 0;
 
 	static Context c;
-	
+
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
 	static int SOUND1 = 1; // alert 5sec
@@ -94,6 +91,15 @@ public class Timer extends Activity implements OnClickListener {
 	static int SOUND3 = 3; // start round
 
 	SharedPreferences sPref;
+
+	WakeLock wL;
+
+	// keep screen
+	static boolean keepScr;
+	// mute
+	static boolean mute;
+	// skipWarmp
+	static boolean skipWU;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -112,13 +118,15 @@ public class Timer extends Activity implements OnClickListener {
 		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
 		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
 		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
+
 	}
 
 	private void initialize() {
 
 		sPref = getSharedPreferences("timerSettings", 0);
 
-		fontDigitClock = Typeface.createFromAsset(c.getAssets(), "lgdr.ttf");
+		fontDigitClock = Typeface.createFromAsset(c.getAssets(),
+				"digital_8.ttf");
 		webSymbol = Typeface.createFromAsset(c.getAssets(), "websymbols.ttf");
 
 		counterDisplay = (TextView) findViewById(R.id.counterDisplay);
@@ -132,7 +140,7 @@ public class Timer extends Activity implements OnClickListener {
 		start.setOnClickListener(this);
 		clear.setOnClickListener(this);
 
-		pB1 = (ProgressBar)findViewById(R.id.progressBar1);
+		pB1 = (ProgressBar) findViewById(R.id.progressBar1);
 
 		// DEFAULT
 		roundLength = 3 * 60;
@@ -146,24 +154,26 @@ public class Timer extends Activity implements OnClickListener {
 		options = (LinearLayout) findViewById(R.id.llOptions);
 		options.setOnClickListener(this);
 
-		exit = (LinearLayout)findViewById(R.id.llExit);
+		exit = (LinearLayout) findViewById(R.id.llExit);
 		exit.setOnClickListener(this);
-		
-		startText = (TextView)findViewById(R.id.tvStart_Pause); 
-		startIcon  = (TextView)findViewById(R.id.tvStartIcon); 
+
+		startText = (TextView) findViewById(R.id.tvStart_Pause);
+		startIcon = (TextView) findViewById(R.id.tvStartIcon);
 		startIcon.setTypeface(webSymbol);
-		
-		clearIcon  = (TextView)findViewById(R.id.tvClearIcon);
+
+		clearIcon = (TextView) findViewById(R.id.tvClearIcon);
 		clearIcon.setTypeface(webSymbol);
-		
-		optionsIcon = (TextView)findViewById(R.id.tvOptionsIcon); 
+
+		optionsIcon = (TextView) findViewById(R.id.tvOptionsIcon);
 		optionsIcon.setTypeface(webSymbol);
-		
-		exitIcon = (TextView)findViewById(R.id.tvExitIcon); 
+
+		exitIcon = (TextView) findViewById(R.id.tvExitIcon);
 		exitIcon.setTypeface(webSymbol);
-		
-		
-		
+
+		// Wake lock
+		PowerManager pM = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wL = pM.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "whatever");
+
 	}
 
 	@Override
@@ -194,7 +204,7 @@ public class Timer extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.llStart_Pause:
 			counterEverStarted = true;
-			
+
 			if (!counterStarted) {
 
 				myCountDownTimer.start();
@@ -206,22 +216,22 @@ public class Timer extends Activity implements OnClickListener {
 					roundsDisplay.setText("Warm Up!");
 					isRest = false;
 				}
-				
+
 			} else {
 				myCountDownTimer.cancel();
 				long resumeFrom = myCountDownTimer.timeLeft;
 				int progress = myCountDownTimer.getProgress();
 				myCountDownTimer = new MyCountDownTimer(resumeFrom, 100);
-				
-				if(isRest){
+
+				if (isRest) {
 					pB1.setMax((roundLength * 1000) - 100);
-				}else if (currentRounds == 0) {
+				} else if (currentRounds == 0) {
 					pB1.setMax((warmLength * 1000) - 100);
-				}else {
+				} else {
 					pB1.setMax((restLength * 1000) - 100);
 				}
 				myCountDownTimer.setProgress(progress);
-				
+
 				startIcon.setText(Html.fromHtml("&#218;"));
 				startText.setText("Resume");
 				counterStarted = false;
@@ -230,24 +240,25 @@ public class Timer extends Activity implements OnClickListener {
 			break;
 		case R.id.llClear:
 			counterEverStarted = false;
-			
+
 			myCountDownTimer.cancel();
 
 			myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
 			pB1.setMax((warmLength * 1000) - 100);
-			
+
 			counterStarted = false;
 			reseted = true;
 			isRest = true;
 			currentRounds = 0;
-			roundsDisplay.setText("Round: " + currentRounds + "/"
-					+ totalRounds);
+			roundsDisplay
+					.setText("Round: " + currentRounds + "/" + totalRounds);
 			counterDisplay.setTextColor(Color.WHITE);
-			//counterDisplay.setText("0:00");
+			// counterDisplay.setText("0:00");
 			int seconds = roundLength % 60;
 			int minutes = roundLength / 60;
-			counterDisplay.setText((String.format("%d:%02d", minutes, seconds)));
-			
+			counterDisplay
+					.setText((String.format("%d:%02d", minutes, seconds)));
+
 			startIcon.setText(Html.fromHtml("&#218;"));
 			startText.setText("Start");
 			pB1.setProgress(0);
@@ -274,7 +285,9 @@ public class Timer extends Activity implements OnClickListener {
 										clear.performClick();
 										Intent i = new Intent(c, Options.class);
 										startActivity(i);
-										overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+										overridePendingTransition(
+												android.R.anim.slide_in_left,
+												android.R.anim.slide_out_right);
 									}
 								})
 						.setNegativeButton("Cancel",
@@ -291,10 +304,12 @@ public class Timer extends Activity implements OnClickListener {
 			} else {
 				Intent i = new Intent(Timer.this, Options.class);
 				startActivity(i);
-				overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right );
+				overridePendingTransition(android.R.anim.slide_in_left,
+						android.R.anim.slide_out_right);
 			}
 			break;
 		case R.id.llExit:
+			myCountDownTimer.cancel();
 			finish();
 			break;
 		}
@@ -302,8 +317,8 @@ public class Timer extends Activity implements OnClickListener {
 
 	public static void startRest() {
 		if (currentRounds < totalRounds) {
-			roundsDisplay.setText("Rest: " + (currentRounds)
-					+ "/" + totalRounds);
+			roundsDisplay.setText("Rest: " + (currentRounds) + "/"
+					+ totalRounds);
 			myCountDownTimer = new MyCountDownTimer(restLength * 1000, 100);
 			pB1.setMax((restLength * 1000) - 100);
 			myCountDownTimer.start();
@@ -340,26 +355,50 @@ public class Timer extends Activity implements OnClickListener {
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
 		totalRounds = sPref.getInt("totalRounds", 1);
+		keepScr = sPref.getBoolean("keepScr", false);
+		mute = sPref.getBoolean("mute", false);
+		skipWU = sPref.getBoolean("skipWU", false);
 
 		Toast t = Toast.makeText(getApplicationContext(), "load done"
 				+ roundLength + " - " + restLength + " - " + totalRounds,
 				Toast.LENGTH_SHORT);
 		t.show();
-	
+
 		roundsDisplay.setText("Round: " + currentRounds + "/" + totalRounds);
-		
+
 		int seconds = roundLength % 60;
 		int minutes = roundLength / 60;
 		counterDisplay.setText((String.format("%d:%02d", minutes, seconds)));
 
+		if (keepScr) {
+			if (!wL.isHeld()) {
+				wL.acquire();
+			}
+			
+		} else {
+			if (wL.isHeld()) {
+				wL.release();
+			}
+		}
+
 		super.onResume();
 
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
 	}
 
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		
+		if (wL.isHeld()) {
+			wL.release();
+		}
+		super.onPause();
+
+	}
 }
