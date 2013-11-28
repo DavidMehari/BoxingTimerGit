@@ -125,8 +125,7 @@ public class Timer extends Activity implements OnClickListener {
 
 		sPref = getSharedPreferences("timerSettings", 0);
 
-		fontDigitClock = Typeface.createFromAsset(c.getAssets(),
-				"digital_8.ttf");
+		fontDigitClock = Typeface.createFromAsset(c.getAssets(), "digital_8.ttf");
 		webSymbol = Typeface.createFromAsset(c.getAssets(), "websymbols.ttf");
 
 		counterDisplay = (TextView) findViewById(R.id.counterDisplay);
