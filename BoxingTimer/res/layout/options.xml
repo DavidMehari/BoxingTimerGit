@@ -23,12 +23,19 @@
              android:paddingRight="15dp"
              android:maxHeight="10dp"
              android:minHeight="5dp" />
+
+         <CheckBox
+             android:id="@+id/cbMute"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center_horizontal"
+             android:text="Mute" />
         
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Length of the round:"
+            android:text="Round Length"
             android:textSize="20dp" />
 
         <RadioGroup
@@ -61,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Length of the rest"
+            android:text="Rest Length"
             android:textSize="20dp" />
 
         <RadioGroup
@@ -103,6 +110,27 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:prompt="@string/total_rounds" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="App Settings:"
+            android:textSize="20dp" />
+
+        <CheckBox
+            android:id="@+id/cbKeepScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Keep the Screen On" />
+
+        <CheckBox
+            android:id="@+id/cbSkipWarmUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Skip the Warm Up" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -24,13 +24,16 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 //	- Progress bar under the time
+//	- Volume control
+
+
 //	- Stop watch
 //	- Total time
 //	- Screen Lock
 //	- Skip warm up
 
 //	- Mute
-//	- Volume control
+
 
 //	- Show current settings on the timer screen (with icons)
 //	- Landscape or fixed
@@ -44,6 +47,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Change buttons to layouts
 //	- Sounds
 //	- Exit prompt
+//	- Options with tabs
 
 
 
