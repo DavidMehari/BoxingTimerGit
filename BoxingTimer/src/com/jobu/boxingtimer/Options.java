@@ -34,7 +34,7 @@ public class Options extends Activity implements OnClickListener,
 	Button bOK, bCancel;
 	SharedPreferences sPref;
 	SeekBar sbVolume;
-	AudioManager am;
+	static AudioManager am;
 	CheckBox cbMute, cbSkipWU, cbKeepScr;
 
 	// from Timer
@@ -58,9 +58,7 @@ public class Options extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.options);
 
-		init();
-
-		loadPreferences();
+		
 	}
 
 	private void loadPreferences() {
@@ -97,14 +95,14 @@ public class Options extends Activity implements OnClickListener,
 		} else {
 			cbKeepScr.setChecked(false);
 		}
-		
+
 		// load screen settings
 		if (mute) {
 			cbMute.setChecked(true);
 		} else {
 			cbMute.setChecked(false);
 		}
-		
+
 		// load screen settings
 		if (skipWU) {
 			cbSkipWU.setChecked(true);
@@ -191,6 +189,9 @@ public class Options extends Activity implements OnClickListener,
 
 			editor.commit();
 
+			//because of setStreamMute bug
+			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+			
 			finish();
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
@@ -199,6 +200,9 @@ public class Options extends Activity implements OnClickListener,
 
 		case R.id.bCancel:
 
+			//because of setStreamMute bug
+			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+			
 			finish();
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
@@ -229,7 +233,6 @@ public class Options extends Activity implements OnClickListener,
 			restLength = 10;
 			break;
 		}
-		
 
 	}
 
@@ -238,7 +241,7 @@ public class Options extends Activity implements OnClickListener,
 			long arg3) {
 
 		totalRounds = arg2 + 1;
-		
+
 	}
 
 	@Override
@@ -281,11 +284,15 @@ public class Options extends Activity implements OnClickListener,
 		case R.id.cbMute:
 			if (isChecked) {
 				mute = true;
+				am.setStreamMute(AudioManager.STREAM_MUSIC, true);
 			} else {
 				mute = false;
+				Toast t = Toast.makeText(this, "mute off", Toast.LENGTH_SHORT);
+				t.show();
+				am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 			}
 			break;
-			
+
 		case R.id.cbSkipWarmUp:
 			if (isChecked) {
 				skipWU = true;
@@ -293,7 +300,7 @@ public class Options extends Activity implements OnClickListener,
 				skipWU = false;
 			}
 			break;
-			
+
 		case R.id.cbKeepScreen:
 			if (isChecked) {
 				keepScr = true;
@@ -303,6 +310,27 @@ public class Options extends Activity implements OnClickListener,
 			break;
 
 		}
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		//because of setStreamMute bug
+		am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+			super.onResume();
+			
+			init();
+
+			loadPreferences();
+			
+			
+			
 	}
 
 }

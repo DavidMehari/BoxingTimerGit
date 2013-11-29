@@ -49,6 +49,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Admob
 //	- Start with accelero
 //	- Grey & white textcolor (white for clickable/grey for text)
+//	- Only mute in timer activity
 
 public class Timer extends Activity implements OnClickListener {
 
