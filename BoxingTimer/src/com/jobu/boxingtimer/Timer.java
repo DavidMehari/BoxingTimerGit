@@ -34,18 +34,19 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Screen Lock
 //	- Mute
 //	- Skip warm up
+//	- Exit (both) stops the timer
 
 //TODO
 
 
 //	- Show current settings on the timer screen (with icons)
 //	- Run in Notification if started
-//	- Exit (both) finish everything
+//	- Hide Test options
+//	- Icon
 //	- Run in background problems - Notification
 //	- Sounds
 //	- Alarm at 5 just buzz
 //	- Exit prompt
-//	- Exit clear
 //	- Options with tabs?
 //	- Timer in landscape also?
 //	- Admob
@@ -256,14 +257,18 @@ public class Timer extends Activity implements OnClickListener {
 			counterEverStarted = false;
 
 			myCountDownTimer.cancel();
-
-			myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
-			pB1.setMax((warmLength * 1000) - 100);
-
+			
+			if(!skipWU){
+				currentRounds = 0;
+			//	myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
+			//	pB1.setMax((warmLength * 1000) - 100);
+			}else{
+				currentRounds = 1;
+			}
 			counterStarted = false;
 			reseted = true;
 			isRest = true;
-			currentRounds = 0;
+			
 			roundsDisplay
 					.setText("Round: " + currentRounds + "/" + totalRounds);
 			counterDisplay.setTextColor(Color.WHITE);
@@ -341,9 +346,10 @@ public class Timer extends Activity implements OnClickListener {
 	}
 
 	public static void startRest() {
+		currentRounds++;
+		
 		if (currentRounds <= totalRounds) {
-			roundsDisplay.setText("Rest: " + (currentRounds-1) + "/"
-					+ (totalRounds-1));
+			roundsDisplay.setText("Rest");
 			myCountDownTimer = new MyCountDownTimer(restLength * 1000, 100);
 			pB1.setMax((restLength * 1000) - 100);
 			myCountDownTimer.start();
@@ -366,6 +372,7 @@ public class Timer extends Activity implements OnClickListener {
 			myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
 			pB1.setMax((warmLength * 1000) - 100);
 			isRest = false;
+			currentRounds++;
 		} else {
 			soundPool.play(soundsMap.get(SOUND3), 1, 1, 1, 0, 1);
 
@@ -378,7 +385,7 @@ public class Timer extends Activity implements OnClickListener {
 		counterStarted = true;
 		startText.setText("Pause");
 		startIcon.setText(Html.fromHtml("&#221;"));
-		currentRounds++;
+		
 	}
 
 	@Override
@@ -426,9 +433,13 @@ public class Timer extends Activity implements OnClickListener {
 		}
 
 		// skip WarmUP
-		if (skipWU && currentRounds == 0) {
+		if (skipWU && !counterEverStarted) {
 			currentRounds = 1;
 		}
+		if (!skipWU && !counterEverStarted) {
+			currentRounds = 0;
+		}
+		
 	}
 
 	@Override
