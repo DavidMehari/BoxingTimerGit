@@ -1,7 +1,6 @@
 package com.jobu.boxingtimer;
 
 import java.util.HashMap;
-
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import android.app.Activity;
