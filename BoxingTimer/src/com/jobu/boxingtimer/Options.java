@@ -35,7 +35,7 @@ public class Options extends Activity implements OnClickListener,
 	SharedPreferences sPref;
 	SeekBar sbVolume;
 	static AudioManager am;
-	CheckBox cbMute, cbSkipWU, cbKeepScr;
+	CheckBox cbMute, cbSkipWU, cbKeepScr, cbAccel;
 
 	// from Timer
 	private int roundLength;
@@ -47,6 +47,8 @@ public class Options extends Activity implements OnClickListener,
 	private boolean mute;
 	// skipWarmp
 	private boolean skipWU;
+	// accelero
+	private boolean accel;
 
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
@@ -58,7 +60,67 @@ public class Options extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.options);
 
-		
+	}
+
+	private void init() {
+		sPref = getSharedPreferences("timerSettings", 0);
+		roundLength = sPref.getInt("roundLength", 3 * 60);
+		restLength = sPref.getInt("restLength", 1 * 60);
+		totalRounds = sPref.getInt("totalRounds", 1);
+		keepScr = sPref.getBoolean("keepScr", false);
+		mute = sPref.getBoolean("mute", false);
+		skipWU = sPref.getBoolean("skipWU", false);
+		accel = sPref.getBoolean("accel", false);
+
+		rgRoundLength = (RadioGroup) findViewById(R.id.roundLengthGroup);
+		rgRestLength = (RadioGroup) findViewById(R.id.restLengthGroup);
+
+		rgRoundLength.setOnCheckedChangeListener(this);
+		rgRestLength.setOnCheckedChangeListener(this);
+
+		spTotalRounds = (Spinner) findViewById(R.id.spRounds);
+		Integer[] totalRoundsArray = new Integer[20];
+		for (int x = 0; x < 20; x++) {
+			totalRoundsArray[x] = x + 1;
+		}
+		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,
+				android.R.layout.simple_spinner_item, totalRoundsArray);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spTotalRounds.setAdapter(adapter);
+		spTotalRounds.setOnItemSelectedListener(this);
+
+		bOK = (Button) findViewById(R.id.bOK);
+		bCancel = (Button) findViewById(R.id.bCancel);
+		bOK.setOnClickListener(this);
+		bCancel.setOnClickListener(this);
+
+		// Volume Control
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		sbVolume = (SeekBar) findViewById(R.id.seekBarVolume);
+		am = (AudioManager) getApplicationContext().getSystemService(
+				Context.AUDIO_SERVICE);
+
+		int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+		int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+		sbVolume.setMax(maxVolume);
+		sbVolume.setProgress(currentVolume);
+		sbVolume.setOnSeekBarChangeListener(this);
+
+		// soundpool
+		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
+		soundsMap = new HashMap<Integer, Integer>();
+		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
+
+		cbMute = (CheckBox) findViewById(R.id.cbMute);
+		cbSkipWU = (CheckBox) findViewById(R.id.cbSkipWarmUp);
+		cbKeepScr = (CheckBox) findViewById(R.id.cbKeepScreen);
+		cbAccel = (CheckBox) findViewById(R.id.cbAccel);
+
+		cbMute.setOnCheckedChangeListener(this);
+		cbSkipWU.setOnCheckedChangeListener(this);
+		cbKeepScr.setOnCheckedChangeListener(this);
+		cbAccel.setOnCheckedChangeListener(this);
 	}
 
 	private void loadPreferences() {
@@ -96,82 +158,27 @@ public class Options extends Activity implements OnClickListener,
 			cbKeepScr.setChecked(false);
 		}
 
-		// load screen settings
+		// load mute settings
 		if (mute) {
 			cbMute.setChecked(true);
 		} else {
 			cbMute.setChecked(false);
 		}
 
-		// load screen settings
+		// load skip settings
 		if (skipWU) {
 			cbSkipWU.setChecked(true);
 		} else {
 			cbSkipWU.setChecked(false);
 		}
 
-	}
-
-	private void init() {
-		sPref = getSharedPreferences("timerSettings", 0);
-		roundLength = sPref.getInt("roundLength", 3 * 60);
-		restLength = sPref.getInt("restLength", 1 * 60);
-		totalRounds = sPref.getInt("totalRounds", 1);
-		keepScr = sPref.getBoolean("keepScr", false);
-		mute = sPref.getBoolean("mute", false);
-		skipWU = sPref.getBoolean("skipWU", false);
-
-		Toast t = Toast.makeText(getApplicationContext(), "load done"
-				+ roundLength + " - " + restLength + " - " + totalRounds,
-				Toast.LENGTH_SHORT);
-		t.show();
-
-		rgRoundLength = (RadioGroup) findViewById(R.id.roundLengthGroup);
-		rgRestLength = (RadioGroup) findViewById(R.id.restLengthGroup);
-
-		rgRoundLength.setOnCheckedChangeListener(this);
-		rgRestLength.setOnCheckedChangeListener(this);
-
-		spTotalRounds = (Spinner) findViewById(R.id.spRounds);
-		Integer[] totalRoundsArray = new Integer[20];
-		for (int x = 0; x < 20; x++) {
-			totalRoundsArray[x] = x + 1;
+		// load accelero settings
+		if (accel) {
+			cbAccel.setChecked(true);
+		} else {
+			cbAccel.setChecked(false);
 		}
-		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,
-				android.R.layout.simple_spinner_item, totalRoundsArray);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spTotalRounds.setAdapter(adapter);
-		spTotalRounds.setOnItemSelectedListener(this);
 
-		bOK = (Button) findViewById(R.id.bOK);
-		bCancel = (Button) findViewById(R.id.bCancel);
-		bOK.setOnClickListener(this);
-		bCancel.setOnClickListener(this);
-
-		// Volume Control
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		sbVolume = (SeekBar) findViewById(R.id.seekBarVolume);
-		am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-
-		int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-
-		sbVolume.setMax(maxVolume);
-		sbVolume.setProgress(currentVolume);
-		sbVolume.setOnSeekBarChangeListener(this);
-
-		// soundpool
-		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
-		soundsMap = new HashMap<Integer, Integer>();
-		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
-
-		cbMute = (CheckBox) findViewById(R.id.cbMute);
-		cbSkipWU = (CheckBox) findViewById(R.id.cbSkipWarmUp);
-		cbKeepScr = (CheckBox) findViewById(R.id.cbKeepScreen);
-
-		cbMute.setOnCheckedChangeListener(this);
-		cbSkipWU.setOnCheckedChangeListener(this);
-		cbKeepScr.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -186,12 +193,13 @@ public class Options extends Activity implements OnClickListener,
 			editor.putBoolean("keepScr", keepScr);
 			editor.putBoolean("mute", mute);
 			editor.putBoolean("skipWU", skipWU);
+			editor.putBoolean("accel", accel);
 
 			editor.commit();
 
-			//because of setStreamMute bug
+			// because of setStreamMute bug
 			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
-			
+
 			finish();
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
@@ -200,9 +208,9 @@ public class Options extends Activity implements OnClickListener,
 
 		case R.id.bCancel:
 
-			//because of setStreamMute bug
+			// because of setStreamMute bug
 			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
-			
+
 			finish();
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
@@ -306,29 +314,33 @@ public class Options extends Activity implements OnClickListener,
 				keepScr = false;
 			}
 			break;
-
+		case R.id.cbAccel:
+			if (isChecked) {
+				accel = true;
+			} else {
+				accel = false;
+			}
+			break;
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		//because of setStreamMute bug
+		// because of setStreamMute bug
 		am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
-			super.onResume();
-			
-			init();
+		super.onResume();
 
-			loadPreferences();
-			
-			
-			
+		init();
+
+		loadPreferences();
+
 	}
 
 }

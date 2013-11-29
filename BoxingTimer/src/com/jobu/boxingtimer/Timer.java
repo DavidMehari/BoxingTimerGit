@@ -11,6 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -37,6 +41,8 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Skip warm up
 //	- Exit (both) stops the timer
 //- Show current settings on the timer screen
+//	- Admob
+
 
 //TODO
 
@@ -48,9 +54,8 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Sounds
 //	- Alarm at 5 just buzz
 //	- Exit prompt
-//	- Options with tabs?
-//	- Timer in landscape also?
-//	- Admob
+//	- Options with tabs? timer, app, volume with icons
+
 //	- Start with accelero
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
@@ -58,8 +63,14 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //BUG
 //	- Mute onPause 
 
-public class Timer extends Activity implements OnClickListener {
+//MAYBE LATER
+//	- Timer in landscape also?
+//	- Add more time variation
 
+
+public class Timer extends Activity implements OnClickListener, SensorEventListener {
+
+	
 	static TextView counterDisplay, roundsDisplay, roundSettingDisp, restSettingDisp;
 	Typeface fontDigitClock, webSymbol;
 
@@ -109,6 +120,18 @@ public class Timer extends Activity implements OnClickListener {
 	static AudioManager am;
 	// skipWarmp
 	static boolean skipWU;
+	
+	//SensorManager
+	SensorManager sm;
+	float ax;
+	float ay;
+	float az;
+	long lastUpdate;	
+	float last_x;
+	float last_y;
+	float last_z;
+	private static final int SHAKE_THRESHOLD = 800;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +212,13 @@ public class Timer extends Activity implements OnClickListener {
 		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
 		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
 
+		//Accelero
+		ax = ay = az = 0;
+		sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		if(sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0){
+			Sensor sensorAccelero = sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
+			sm.registerListener(this, sensorAccelero, SensorManager.SENSOR_DELAY_NORMAL);
+		}
 	}
 
 	@Override
@@ -393,7 +423,6 @@ public class Timer extends Activity implements OnClickListener {
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 		sPref = getSharedPreferences("timerSettings", 0);
@@ -448,14 +477,12 @@ public class Timer extends Activity implements OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		// super.onBackPressed();
 		moveTaskToBack(true); // on back button just hide
 	}
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 
 		if (wL.isHeld()) {
@@ -466,12 +493,47 @@ public class Timer extends Activity implements OnClickListener {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		clear.performClick();
 		if (mute) {
 			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 		}
 
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		
+            
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+		    long curTime = System.currentTimeMillis();
+		    
+		    // only allow one update every 100ms.
+		    if ((curTime - lastUpdate) > 100) {
+		      long diffTime = (curTime - lastUpdate);
+		      lastUpdate = curTime;
+
+		      ax = event.values[0];
+		      ay = event.values[1];
+		      az = event.values[2];
+
+		      float speed = Math.abs(ax+2*ay+(az)-last_x-last_y-last_z) / diffTime * 10000;
+
+		      if (speed > SHAKE_THRESHOLD) {
+		    	 
+		        Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+		    	  
+		      }
+		      last_x = ax;
+		      last_y = ay;
+		      last_z = az;
+		    }
+		  }
 	}
 }

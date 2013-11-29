@@ -132,6 +132,13 @@
             android:layout_gravity="center_horizontal"
             android:text="Skip the Warm Up" />
 
+        <CheckBox
+            android:id="@+id/cbAccel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Start/Pause with movement" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
