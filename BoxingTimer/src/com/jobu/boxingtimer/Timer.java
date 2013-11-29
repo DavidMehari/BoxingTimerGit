@@ -32,17 +32,18 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Change buttons to layouts
 //	- Monospace digital clock
 //	- Screen Lock
-
+//	- Mute
+//	- Skip warm up
 
 //TODO
-//	- Stop watch
-//	- Skip warm up
-//	- Mute
+
+
 //	- Show current settings on the timer screen (with icons)
 //	- Run in Notification if started
 //	- Exit (both) finish everything
-//	- Run in background problems
+//	- Run in background problems - Notification
 //	- Sounds
+//	- Alarm at 5 just buzz
 //	- Exit prompt
 //	- Exit clear
 //	- Options with tabs?
@@ -50,7 +51,10 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Admob
 //	- Start with accelero
 //	- Grey & white textcolor (white for clickable/grey for text)
-//	- Only mute in timer activity
+//	- Stop watch
+
+//BUG
+//	- Mute onPause 
 
 public class Timer extends Activity implements OnClickListener {
 
@@ -115,20 +119,14 @@ public class Timer extends Activity implements OnClickListener {
 
 		initialize();
 
-		// soundpool
-		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
-		soundsMap = new HashMap<Integer, Integer>();
-		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
-		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
-		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
-
 	}
 
 	private void initialize() {
 
 		sPref = getSharedPreferences("timerSettings", 0);
 
-		fontDigitClock = Typeface.createFromAsset(c.getAssets(), "digital_8.ttf");
+		fontDigitClock = Typeface.createFromAsset(c.getAssets(),
+				"digital_8.ttf");
 		webSymbol = Typeface.createFromAsset(c.getAssets(), "websymbols.ttf");
 
 		counterDisplay = (TextView) findViewById(R.id.counterDisplay);
@@ -149,7 +147,7 @@ public class Timer extends Activity implements OnClickListener {
 		restLength = 1 * 60;
 		warmLength = 5;
 		totalRounds = 1;
-		// Warm Up
+		// DEFAULT COUNTDOWN
 		myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
 		pB1.setMax((warmLength * 1000) - 100);
 
@@ -175,6 +173,13 @@ public class Timer extends Activity implements OnClickListener {
 		// Wake lock
 		PowerManager pM = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wL = pM.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "whatever");
+
+		// soundpool
+		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
+		soundsMap = new HashMap<Integer, Integer>();
+		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
+		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
+		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
 
 	}
 
@@ -205,10 +210,17 @@ public class Timer extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.llStart_Pause:
-			counterEverStarted = true;
+			if(!counterEverStarted){
+				startRound();
+				counterEverStarted = true;
+				break;
+			}
+			
+			
 
 			if (!counterStarted) {
 
+				
 				myCountDownTimer.start();
 				counterStarted = true;
 				startIcon.setText(Html.fromHtml("&#221;"));
@@ -285,9 +297,11 @@ public class Timer extends Activity implements OnClickListener {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										clear.performClick();
-										//unmute
-										if(mute){
-											am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+										// unmute
+										if (mute) {
+											am.setStreamMute(
+													AudioManager.STREAM_MUSIC,
+													false);
 										}
 										Intent i = new Intent(c, Options.class);
 										startActivity(i);
@@ -308,11 +322,11 @@ public class Timer extends Activity implements OnClickListener {
 				alertDialog.show();
 
 			} else {
-				//unmute
-				if(mute){
+				// unmute
+				if (mute) {
 					am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 				}
-				
+
 				Intent i = new Intent(Timer.this, Options.class);
 				startActivity(i);
 				overridePendingTransition(android.R.anim.slide_in_left,
@@ -327,9 +341,9 @@ public class Timer extends Activity implements OnClickListener {
 	}
 
 	public static void startRest() {
-		if (currentRounds < totalRounds) {
-			roundsDisplay.setText("Rest: " + (currentRounds) + "/"
-					+ totalRounds);
+		if (currentRounds <= totalRounds) {
+			roundsDisplay.setText("Rest: " + (currentRounds-1) + "/"
+					+ (totalRounds-1));
 			myCountDownTimer = new MyCountDownTimer(restLength * 1000, 100);
 			pB1.setMax((restLength * 1000) - 100);
 			myCountDownTimer.start();
@@ -345,25 +359,33 @@ public class Timer extends Activity implements OnClickListener {
 	}
 
 	public static void startRound() {
-		soundPool.play(soundsMap.get(SOUND3), 1, 1, 1, 0, 1);
 
-		currentRounds++;
-		roundsDisplay.setText("Round: " + currentRounds + "/" + totalRounds);
-		myCountDownTimer = new MyCountDownTimer(roundLength * 1000, 100);
-		pB1.setMax((roundLength * 1000) - 100);
+		if (currentRounds == 0) {
+			// Warm Up
+			roundsDisplay.setText("Warm Up");
+			myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
+			pB1.setMax((warmLength * 1000) - 100);
+			isRest = false;
+		} else {
+			soundPool.play(soundsMap.get(SOUND3), 1, 1, 1, 0, 1);
+
+			roundsDisplay.setText("Round: " + currentRounds + "/" + totalRounds);
+			myCountDownTimer = new MyCountDownTimer(roundLength * 1000, 100);
+			pB1.setMax((roundLength * 1000) - 100);
+			isRest = true;
+		}
 		myCountDownTimer.start();
 		counterStarted = true;
 		startText.setText("Pause");
 		startIcon.setText(Html.fromHtml("&#221;"));
-		isRest = true;
-
+		currentRounds++;
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		sPref = getSharedPreferences("timerSettings", 0);
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
@@ -383,25 +405,30 @@ public class Timer extends Activity implements OnClickListener {
 		int minutes = roundLength / 60;
 		counterDisplay.setText((String.format("%d:%02d", minutes, seconds)));
 
-		//keep screen
+		// keep screen
 		if (keepScr) {
 			if (!wL.isHeld()) {
 				wL.acquire();
 			}
-			
+
 		} else {
 			if (wL.isHeld()) {
 				wL.release();
 			}
 		}
 
-		//mute
-		am = (AudioManager)getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-		
-		if(mute){
+		// mute
+		am = (AudioManager) getApplicationContext().getSystemService(
+				Context.AUDIO_SERVICE);
+
+		if (mute) {
 			am.setStreamMute(AudioManager.STREAM_MUSIC, true);
 		}
 
+		// skip WarmUP
+		if (skipWU && currentRounds == 0) {
+			currentRounds = 1;
+		}
 	}
 
 	@Override
@@ -414,22 +441,21 @@ public class Timer extends Activity implements OnClickListener {
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		
+
 		if (wL.isHeld()) {
 			wL.release();
 		}
-		
-		
+
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		clear.performClick();
-		if(mute){
+		if (mute) {
 			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 		}
-		
+
 	}
 }
