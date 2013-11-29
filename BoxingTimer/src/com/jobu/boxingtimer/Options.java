@@ -151,7 +151,7 @@ public class Options extends Activity implements OnClickListener,
 		// Volume Control
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		sbVolume = (SeekBar) findViewById(R.id.seekBarVolume);
-		am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 		int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 		int currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -287,8 +287,6 @@ public class Options extends Activity implements OnClickListener,
 				am.setStreamMute(AudioManager.STREAM_MUSIC, true);
 			} else {
 				mute = false;
-				Toast t = Toast.makeText(this, "mute off", Toast.LENGTH_SHORT);
-				t.show();
 				am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 			}
 			break;

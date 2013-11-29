@@ -44,6 +44,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Run in background problems
 //	- Sounds
 //	- Exit prompt
+//	- Exit clear
 //	- Options with tabs?
 //	- Timer in landscape also?
 //	- Admob
@@ -99,6 +100,7 @@ public class Timer extends Activity implements OnClickListener {
 	static boolean keepScr;
 	// mute
 	static boolean mute;
+	static AudioManager am;
 	// skipWarmp
 	static boolean skipWU;
 
@@ -145,7 +147,7 @@ public class Timer extends Activity implements OnClickListener {
 		// DEFAULT
 		roundLength = 3 * 60;
 		restLength = 1 * 60;
-		warmLength = 15;
+		warmLength = 5;
 		totalRounds = 1;
 		// Warm Up
 		myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
@@ -283,6 +285,10 @@ public class Timer extends Activity implements OnClickListener {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										clear.performClick();
+										//unmute
+										if(mute){
+											am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+										}
 										Intent i = new Intent(c, Options.class);
 										startActivity(i);
 										overridePendingTransition(
@@ -302,6 +308,11 @@ public class Timer extends Activity implements OnClickListener {
 				alertDialog.show();
 
 			} else {
+				//unmute
+				if(mute){
+					am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+				}
+				
 				Intent i = new Intent(Timer.this, Options.class);
 				startActivity(i);
 				overridePendingTransition(android.R.anim.slide_in_left,
@@ -351,6 +362,8 @@ public class Timer extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		super.onResume();
+		
 		sPref = getSharedPreferences("timerSettings", 0);
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
@@ -370,6 +383,7 @@ public class Timer extends Activity implements OnClickListener {
 		int minutes = roundLength / 60;
 		counterDisplay.setText((String.format("%d:%02d", minutes, seconds)));
 
+		//keep screen
 		if (keepScr) {
 			if (!wL.isHeld()) {
 				wL.acquire();
@@ -381,7 +395,12 @@ public class Timer extends Activity implements OnClickListener {
 			}
 		}
 
-		super.onResume();
+		//mute
+		am = (AudioManager)getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+		
+		if(mute){
+			am.setStreamMute(AudioManager.STREAM_MUSIC, true);
+		}
 
 	}
 
@@ -394,11 +413,23 @@ public class Timer extends Activity implements OnClickListener {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		super.onPause();
 		
 		if (wL.isHeld()) {
 			wL.release();
 		}
-		super.onPause();
-
+		
+		
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		clear.performClick();
+		if(mute){
+			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
+		}
+		
 	}
 }
