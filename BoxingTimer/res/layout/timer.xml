@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center" >
@@ -8,12 +9,21 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:weightSum="100" >
+        
+        <com.google.ads.AdView
+            android:id="@+id/advert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3802621606959476/1072465344"
+            ads:loadAdOnCreate="true" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_gravity="center_vertical"
-            android:layout_weight="65"
+            android:layout_weight="60"
             android:gravity="center"
             android:orientation="vertical" >
 
@@ -162,7 +172,7 @@
             android:id="@+id/llStart_Pause"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingRight="20dp" >
