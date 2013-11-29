@@ -53,7 +53,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Admob
 //	- Start with accelero
 //	- Grey & white textcolor (white for clickable/grey for text)
-
+//	- Test on different screen sizes
 
 //BUG
 //	- Mute onPause 
@@ -360,7 +360,7 @@ public class Timer extends Activity implements OnClickListener {
 			startIcon.setText(Html.fromHtml("&#221;"));
 			isRest = false;
 		} else {
-			roundsDisplay.setText("Workout Finished!");
+			roundsDisplay.setText("Finished!");
 			counterDisplay.setText("0:00");
 			start.setEnabled(false);
 		}
