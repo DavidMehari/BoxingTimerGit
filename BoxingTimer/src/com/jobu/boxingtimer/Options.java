@@ -19,7 +19,9 @@ import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TabHost;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TabHost.TabSpec;
 import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
@@ -53,12 +55,37 @@ public class Options extends Activity implements OnClickListener,
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
 	static int SOUND1 = 1;
+	
+	//Tabs
+	TabHost th;
+	TabSpec tabSpecs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.options);
+		
+		th = (TabHost)findViewById(R.id.tabhost);
+		th.setup();
+		
+		tabSpecs = th.newTabSpec("tabTimeTag");
+		tabSpecs.setContent(R.id.tabTime);
+		tabSpecs.setIndicator("Timer");
+		
+		th.addTab(tabSpecs);
+		
+		tabSpecs = th.newTabSpec("tabVolTag");
+		tabSpecs.setContent(R.id.tabVol);
+		tabSpecs.setIndicator("Volume");
+		
+		th.addTab(tabSpecs);
+		
+		tabSpecs = th.newTabSpec("tabAppTag");
+		tabSpecs.setContent(R.id.tabApp);
+		tabSpecs.setIndicator("App");
+		
+		th.addTab(tabSpecs);
 
 	}
 
@@ -67,7 +94,7 @@ public class Options extends Activity implements OnClickListener,
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
 		totalRounds = sPref.getInt("totalRounds", 1);
-		keepScr = sPref.getBoolean("keepScr", false);
+		keepScr = sPref.getBoolean("keepScr", true);
 		mute = sPref.getBoolean("mute", false);
 		skipWU = sPref.getBoolean("skipWU", false);
 		accel = sPref.getBoolean("accel", false);

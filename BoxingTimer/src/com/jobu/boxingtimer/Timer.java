@@ -19,6 +19,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.text.Html;
@@ -40,25 +41,29 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Mute
 //	- Skip warm up
 //	- Exit (both) stops the timer
-//- Show current settings on the timer screen
+//	- Show current settings on the timer screen
 //	- Admob
-
+//	- Accelero start
+//	- Options with tabs
 
 //TODO
 
-
-//	- Run in Notification if started
-//	- Hide Test options
+//	- Run in Notification if counterStarted
 //	- Icon
-//	- Run in background problems - Notification
+//	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
 //	- Sounds
 //	- Alarm at 5 just buzz
 //	- Exit prompt
-//	- Options with tabs? timer, app, volume with icons
-
-//	- Start with accelero
+//	- Options with icons
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
+//	- Shake sensitivity
+//	- Sound or vibrate on shake
+//	- After 1 shake block sensor for 1 sec - unregister
+//	- Font change?
+//	- Comment out all Toast
+//	- Hide Test options for later use
+//	- Options buttos to ll
 
 //BUG
 //	- Mute onPause 
@@ -66,12 +71,13 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //MAYBE LATER
 //	- Timer in landscape also?
 //	- Add more time variation
+//	- Templates
 
+public class Timer extends Activity implements OnClickListener,
+		SensorEventListener {
 
-public class Timer extends Activity implements OnClickListener, SensorEventListener {
-
-	
-	static TextView counterDisplay, roundsDisplay, roundSettingDisp, restSettingDisp;
+	static TextView counterDisplay, roundsDisplay, roundSettingDisp,
+			restSettingDisp;
 	Typeface fontDigitClock, webSymbol;
 
 	static ProgressBar pB1;
@@ -89,10 +95,10 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 	LinearLayout exit;
 
 	static MyCountDownTimer myCountDownTimer;
-	static boolean counterStarted = false;	//is it ticking now
-	static boolean counterEverStarted = false;	//was it ever started
+	static boolean counterStarted = false; // is it ticking now
+	static boolean counterEverStarted = false; // was it ever started
 
-	boolean reseted = true;	//???
+	boolean reseted = true; // ???
 	static boolean isRest = true;
 
 	static int roundLength;
@@ -120,18 +126,20 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 	static AudioManager am;
 	// skipWarmp
 	static boolean skipWU;
-	
-	//SensorManager
+
+	// Accelerometer & SensorManager
+	static boolean accel;
 	SensorManager sm;
 	float ax;
 	float ay;
 	float az;
-	long lastUpdate;	
+	long lastUpdate;
 	float last_x;
 	float last_y;
 	float last_z;
 	private static final int SHAKE_THRESHOLD = 800;
-	
+	Sensor sensorAccelero;
+	final Handler handler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +152,9 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 
 		initialize();
 
-		//AdMob
-        AdView av = (AdView)findViewById(R.id.advert);
-        av.loadAd(new AdRequest());
+		// AdMob
+		AdView av = (AdView) findViewById(R.id.advert);
+		av.loadAd(new AdRequest());
 	}
 
 	private void initialize() {
@@ -161,10 +169,9 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 		counterDisplay.setTypeface(fontDigitClock);
 
 		roundsDisplay = (TextView) findViewById(R.id.roundsDisplay);
-		roundSettingDisp = (TextView)findViewById(R.id.tvRoundSetting);
-		restSettingDisp = (TextView)findViewById(R.id.tvRestSetting);
-		
-		
+		roundSettingDisp = (TextView) findViewById(R.id.tvRoundSetting);
+		restSettingDisp = (TextView) findViewById(R.id.tvRestSetting);
+
 		start = (LinearLayout) findViewById(R.id.llStart_Pause);
 		clear = (LinearLayout) findViewById(R.id.llClear);
 
@@ -179,8 +186,8 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 		warmLength = 5;
 		totalRounds = 1;
 		// DEFAULT COUNTDOWN
-		 myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
-		 pB1.setMax((warmLength * 1000) - 100);
+		myCountDownTimer = new MyCountDownTimer(warmLength * 1000, 100);
+		pB1.setMax((warmLength * 1000) - 100);
 
 		options = (LinearLayout) findViewById(R.id.llOptions);
 		options.setOnClickListener(this);
@@ -212,12 +219,11 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
 		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
 
-		//Accelero
+		// Accelero
 		ax = ay = az = 0;
 		sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		if(sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0){
-			Sensor sensorAccelero = sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
-			sm.registerListener(this, sensorAccelero, SensorManager.SENSOR_DELAY_NORMAL);
+		if (sm.getSensorList(Sensor.TYPE_ACCELEROMETER).size() != 0) {
+			sensorAccelero = sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
 		}
 	}
 
@@ -429,21 +435,25 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 		roundLength = sPref.getInt("roundLength", 3 * 60);
 		restLength = sPref.getInt("restLength", 1 * 60);
 		totalRounds = sPref.getInt("totalRounds", 1);
-		keepScr = sPref.getBoolean("keepScr", false);
+		keepScr = sPref.getBoolean("keepScr", true);
 		mute = sPref.getBoolean("mute", false);
 		skipWU = sPref.getBoolean("skipWU", false);
+		accel = sPref.getBoolean("accel", false);
 
 		roundsDisplay.setText("Round: " + currentRounds + "/" + totalRounds);
-		
+
 		int seconds = restLength % 60;
 		int minutes = restLength / 60;
-		restSettingDisp.setText((String.format("Rest: %d:%02d", minutes, seconds)));
+		restSettingDisp.setText((String.format("Rest: %d:%02d", minutes,
+				seconds)));
 		seconds = roundLength % 60;
 		minutes = roundLength / 60;
-		roundSettingDisp.setText((String.format("Round: %d:%02d", minutes, seconds)));
+		roundSettingDisp.setText((String.format("Round: %d:%02d", minutes,
+				seconds)));
 
 		if (!counterEverStarted) {
-			counterDisplay.setText((String.format("%d:%02d", minutes, seconds)));
+			counterDisplay
+					.setText((String.format("%d:%02d", minutes, seconds)));
 		}
 		// keep screen
 		if (keepScr) {
@@ -473,6 +483,16 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 			currentRounds = 0;
 		}
 
+		// accelero
+		if (accel) {
+			sm.registerListener(this, sensorAccelero,
+					SensorManager.SENSOR_DELAY_GAME);
+		//	Toast.makeText(this, "reg", Toast.LENGTH_SHORT).show();
+		} else {
+			sm.unregisterListener(this);
+		//	Toast.makeText(this, "unreg", Toast.LENGTH_SHORT).show();
+		}
+
 	}
 
 	@Override
@@ -484,10 +504,12 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 	@Override
 	protected void onPause() {
 		super.onPause();
-
+		// turn off wakelock
 		if (wL.isHeld()) {
 			wL.release();
 		}
+		// turn off motion sensor
+		sm.unregisterListener(this);
 
 	}
 
@@ -495,45 +517,61 @@ public class Timer extends Activity implements OnClickListener, SensorEventListe
 	protected void onDestroy() {
 		super.onDestroy();
 		clear.performClick();
+		// reset volume
 		if (mute) {
 			am.setStreamMute(AudioManager.STREAM_MUSIC, false);
 		}
+		// turn off motion sensor
+		sm.unregisterListener(this);
 
 	}
 
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		
-            
+
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-		    long curTime = System.currentTimeMillis();
-		    
-		    // only allow one update every 100ms.
-		    if ((curTime - lastUpdate) > 100) {
-		      long diffTime = (curTime - lastUpdate);
-		      lastUpdate = curTime;
+			long curTime = System.currentTimeMillis();
 
-		      ax = event.values[0];
-		      ay = event.values[1];
-		      az = event.values[2];
+			// only allow one update every 100ms.
+			if ((curTime - lastUpdate) > 100) {
+				long diffTime = (curTime - lastUpdate);
+				lastUpdate = curTime;
 
-		      float speed = Math.abs(ax+2*ay+(az)-last_x-last_y-last_z) / diffTime * 10000;
+				ax = event.values[0];
+				ay = event.values[1];
+				az = event.values[2];
 
-		      if (speed > SHAKE_THRESHOLD) {
-		    	 
-		        Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
-		    	  
-		      }
-		      last_x = ax;
-		      last_y = ay;
-		      last_z = az;
-		    }
-		  }
+				float speed = Math.abs(ax + ay + (az) - last_x - last_y
+						- last_z)
+						/ diffTime * 10000;
+
+				if (speed > SHAKE_THRESHOLD) {
+
+					//Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
+					start.performClick();
+					sm.unregisterListener(this);
+
+					handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							// Re-register the listener after 1500ms --> only on
+							// performclick performclick
+							sm.registerListener(Timer.this, sensorAccelero,
+									SensorManager.SENSOR_DELAY_GAME);
+						}
+					}, 1500);
+
+				}
+				last_x = ax;
+				last_y = ay;
+				last_z = az;
+			}
+		}
 	}
 }
