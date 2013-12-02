@@ -3,11 +3,15 @@ package com.jobu.boxingtimer;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -16,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -34,6 +39,7 @@ public class Options extends Activity implements OnClickListener,
 	RadioButton selectedRadioButton;
 	Spinner spTotalRounds;
 	Button bOK, bCancel;
+	ImageButton bInfo;
 	SharedPreferences sPref;
 	SeekBar sbVolume;
 	static AudioManager am;
@@ -121,8 +127,11 @@ public class Options extends Activity implements OnClickListener,
 
 		bOK = (Button) findViewById(R.id.bOK);
 		bCancel = (Button) findViewById(R.id.bCancel);
+		bInfo = (ImageButton) findViewById(R.id.bInfo);		
 		bOK.setOnClickListener(this);
 		bCancel.setOnClickListener(this);
+		bInfo.setOnClickListener(this);
+		
 
 		// Volume Control
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -244,6 +253,34 @@ public class Options extends Activity implements OnClickListener,
 			finish();
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
+			break;
+		case R.id.bInfo:
+
+			LayoutInflater inflater= LayoutInflater.from(this);
+	        View infoView=inflater.inflate(R.layout.timer_info, null);
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					this);
+
+			// set title
+			alertDialogBuilder.setTitle("Info");
+
+			// set dialog message
+			alertDialogBuilder
+					.setView(infoView)
+					.setIcon(R.drawable.ic_info)
+					.setCancelable(true)
+					.setNeutralButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+
+									dialog.cancel();
+								}
+							});
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+
 			break;
 		}
 	}

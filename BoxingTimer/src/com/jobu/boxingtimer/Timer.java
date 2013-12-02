@@ -53,24 +53,26 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Vibrate on shake
 //	- Exit prompt
 //	- Alarm at 5 just buzz
+//	- Official Round length check
+//	- Shake sensitivity
+//	- Info Dialog in Timer Options
 
 //TODO
 
 
 //	- Run in Notification if counterStarted
 //	- Icon
-//	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
+//	- pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
 //	- Sounds - How many gongs???
-//	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
-//	- Shake sensitivity - now too sensitive on sony
+
 
 
 //	- Exit? Quit? Close?
+//	- Grey & white textcolor (white for clickable/grey for text)
 //	- Font change?
 //	- Comment out all Toast
 //	- Hide Test options for later use
-//	- Option buttons to ll
 //	- Clean The code and resources
 
 //BUG
@@ -146,7 +148,7 @@ public class Timer extends Activity implements OnClickListener,
 	float last_x;
 	float last_y;
 	float last_z;
-	private static final int SHAKE_THRESHOLD = 800;
+	private static final int SHAKE_THRESHOLD = 3500;
 	Sensor sensorAccelero;
 	final Handler handler = new Handler();
 
@@ -603,7 +605,7 @@ public class Timer extends Activity implements OnClickListener,
 
 				if (speed > SHAKE_THRESHOLD) {
 
-					//Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
 					start.performClick();
 					//Vibrate on move
 					Vibrator vb = (Vibrator)   getSystemService(Context.VIBRATOR_SERVICE);
@@ -615,7 +617,7 @@ public class Timer extends Activity implements OnClickListener,
 						@Override
 						public void run() {
 							// Re-register the listener after 1500ms --> only on
-							// performclick performclick
+							// performclick
 							sm.registerListener(Timer.this, sensorAccelero,
 									SensorManager.SENSOR_DELAY_GAME);
 						}

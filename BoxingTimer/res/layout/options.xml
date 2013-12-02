@@ -49,6 +49,14 @@
                             android:text="Timer Settings:"
                             android:textSize="20dp" />
 
+                        <ImageButton
+                            android:id="@+id/bInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/ic_info"
+                            android:background="@drawable/button_bg" />
+
                         <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -81,7 +89,8 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_weight="1"
                             android:text="Round Length"
-                            android:textSize="20dp" />
+                            android:textSize="20dp"
+                             />
 
                         <RadioGroup
                             android:id="@+id/roundLengthGroup"
@@ -95,7 +104,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:checked="true"
-                                android:text="3 minutes" />
+                                android:text="3 minutes"/>
 
                             <RadioButton
                                 android:id="@+id/rbroundLength2min"
