@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.Vibrator;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,20 +50,21 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Options with icons - laucher type
 //	- After 1 shake block sensor for 1 sec - unregister
 //	- ProgressBar color blue
+//	- Vibrate on shake
+//	- Exit prompt
 
 //TODO
 
-
+//	- Exit? Quit? Close?
 //	- Run in Notification if counterStarted
 //	- Icon
 //	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
 //	- Sounds
 //	- Alarm at 5 just buzz
-//	- Exit prompt
+
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
 //	- Shake sensitivity - now too sensitive on sony
-//	- Sound or vibrate on shake
 //	- Font change?
 
 //	- Comment out all Toast
@@ -256,7 +258,7 @@ public class Timer extends Activity implements OnClickListener,
 
 		switch (item.getItemId()) {
 		case R.id.exit:
-			finish();
+			exit.performClick();
 			break;
 
 		case R.id.options:
@@ -394,8 +396,36 @@ public class Timer extends Activity implements OnClickListener,
 			}
 			break;
 		case R.id.llExit:
-			myCountDownTimer.cancel();
-			finish();
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					this);
+
+			// set title
+			alertDialogBuilder.setTitle("Exit");
+
+			// set dialog message
+			alertDialogBuilder
+					.setMessage("Are you sure?")
+					.setCancelable(false)
+					.setPositiveButton("Exit",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									myCountDownTimer.cancel();
+									finish();
+								}
+							})
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+
+									dialog.cancel();
+								}
+							});
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+
+			
 			break;
 		}
 	}
@@ -572,6 +602,10 @@ public class Timer extends Activity implements OnClickListener,
 
 					//Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
 					start.performClick();
+					//Vibrate on move
+					Vibrator vb = (Vibrator)   getSystemService(Context.VIBRATOR_SERVICE);
+		            vb.vibrate(100);
+		            
 					sm.unregisterListener(this);
 
 					handler.postDelayed(new Runnable() {
