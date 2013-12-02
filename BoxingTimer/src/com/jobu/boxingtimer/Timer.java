@@ -46,27 +46,28 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Admob
 //	- Accelero start
 //	- Options with tabs
+//	- Options with icons - laucher type
+//	- After 1 shake block sensor for 1 sec - unregister
+//	- ProgressBar color blue
 
 //TODO
 
-//	- finish http://android-ui-utils.googlecode.com/hg/asset-studio/dist/icons-actionbar.html
+
 //	- Run in Notification if counterStarted
 //	- Icon
 //	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
 //	- Sounds
 //	- Alarm at 5 just buzz
 //	- Exit prompt
-//	- Options with icons
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
-//	- Shake sensitivity
+//	- Shake sensitivity - now too sensitive on sony
 //	- Sound or vibrate on shake
-//	- After 1 shake block sensor for 1 sec - unregister
 //	- Font change?
 
 //	- Comment out all Toast
 //	- Hide Test options for later use
-//	- Options buttos to ll
+//	- Option buttons to ll
 //	- Vibrate on 
 
 //BUG
@@ -183,7 +184,7 @@ public class Timer extends Activity implements OnClickListener,
 		clear.setOnClickListener(this);
 
 		pB1 = (ProgressBar) findViewById(R.id.progressBar1);
-		
+		pB1.setProgressDrawable(getResources().getDrawable(R.drawable.myprogress));
 
 		// DEFAULT
 		roundLength = 3 * 60;
