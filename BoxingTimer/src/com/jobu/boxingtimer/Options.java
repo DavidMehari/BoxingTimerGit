@@ -72,21 +72,21 @@ public class Options extends Activity implements OnClickListener,
 		tabSpecs = th.newTabSpec("tabTimeTag");
 		tabSpecs.setContent(R.id.tabTime);
 		//tabSpecs.setIndicator("Timer");
-		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_timer_xxhdpi_144));
+		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_tab_timer));
 		
 		th.addTab(tabSpecs);
 		
 		tabSpecs = th.newTabSpec("tabVolTag");
 		tabSpecs.setContent(R.id.tabVol);
 		//tabSpecs.setIndicator("Volume");
-		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_volume_xxhdpi_144));
+		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_tab_volume));
 		
 		th.addTab(tabSpecs);
 		
 		tabSpecs = th.newTabSpec("tabAppTag");
 		tabSpecs.setContent(R.id.tabApp);
 		//tabSpecs.setIndicator("App");
-		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_settings_xxhdpi_144));
+		tabSpecs.setIndicator("", getResources().getDrawable(R.drawable.ic_tab_app));
 		
 		th.addTab(tabSpecs);
 
