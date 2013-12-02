@@ -122,21 +122,21 @@
             android:id="@+id/cbKeepScreen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="left"
             android:text="Keep the Screen On" />
 
         <CheckBox
             android:id="@+id/cbSkipWarmUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="left"
             android:text="Skip the Warm Up" />
 
         <CheckBox
             android:id="@+id/cbAccel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="left"
             android:text="Start/Pause with movement" />
 
         <LinearLayout

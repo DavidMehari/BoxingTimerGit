@@ -43,30 +43,52 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             android:layout_gravity="center_horizontal"
-                            android:text="Total Rounds"
+                            android:layout_weight="1"
+                            android:text="Timer Settings:"
                             android:textSize="20dp" />
 
-                        <Spinner
-                            android:id="@+id/spRounds"
+                        <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:prompt="@string/total_rounds" />
+                            android:baselineAligned="true" >
+
+                            <Spinner
+                                android:id="@+id/spRounds"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_toRightOf="@+id/textView1"
+                                android:prompt="@string/total_rounds" />
+
+                            <TextView
+                                android:id="@+id/textView1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginRight="5dp"
+                                android:text="Total Rounds:"
+                                android:textSize="20dp" />
+
+                        </RelativeLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             android:layout_gravity="center_horizontal"
+                            android:layout_weight="1"
                             android:text="Round Length"
                             android:textSize="20dp" />
 
                         <RadioGroup
                             android:id="@+id/roundLengthGroup"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center" >
+                            android:layout_height="0dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1" >
 
                             <RadioButton
                                 android:id="@+id/rbroundLength3min"
@@ -90,16 +112,18 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="0dp"
                             android:layout_gravity="center_horizontal"
+                            android:layout_weight="1"
                             android:text="Rest Length"
                             android:textSize="20dp" />
 
                         <RadioGroup
                             android:id="@+id/restLengthGroup"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center" >
+                            android:layout_height="0dp"
+                            android:layout_gravity="center"
+                            android:layout_weight="1" >
 
                             <RadioButton
                                 android:id="@+id/rbrestLength1min"
@@ -121,6 +145,7 @@
                                 android:text="Test" />
                         </RadioGroup>
                     </LinearLayout>
+
                 </ScrollView>
 
                 <LinearLayout
@@ -141,21 +166,21 @@
                         android:id="@+id/cbKeepScreen"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="left"
                         android:text="Keep the Screen On" />
 
                     <CheckBox
                         android:id="@+id/cbSkipWarmUp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="left"
                         android:text="Skip the Warm Up" />
 
                     <CheckBox
                         android:id="@+id/cbAccel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="left"
                         android:text="Start/Pause with movement" />
                 </LinearLayout>
 
@@ -205,7 +230,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:text="OK" />
+            android:text="Save" />
 
         <Button
             android:id="@+id/bCancel"

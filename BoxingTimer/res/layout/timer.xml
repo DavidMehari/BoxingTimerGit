@@ -98,7 +98,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="50"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:background="@drawable/button_bg"
+                android:layout_margin="3dp" >
 
                 <TextView
                     android:id="@+id/tvOptionsIcon"
@@ -123,7 +125,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="50"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:background="@drawable/button_bg"
+                android:layout_margin="3dp" >
 
                 <TextView
                     android:id="@+id/tvClearIcon"
@@ -148,7 +152,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="50"
                 android:gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:background="@drawable/button_bg"
+                android:layout_margin="3dp" >
 
                 <TextView
                     android:id="@+id/tvExitIcon"
@@ -175,7 +181,9 @@
             android:layout_weight="20"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingRight="20dp" >
+            android:paddingRight="30dp"
+            android:background="@drawable/button_bg"
+            android:layout_margin="3dp" >
 
             <TextView
                 android:id="@+id/tvStartIcon"

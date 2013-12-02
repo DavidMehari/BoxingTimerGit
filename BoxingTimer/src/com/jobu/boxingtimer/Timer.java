@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -48,6 +49,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 //TODO
 
+//	- finish http://android-ui-utils.googlecode.com/hg/asset-studio/dist/icons-actionbar.html
 //	- Run in Notification if counterStarted
 //	- Icon
 //	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
@@ -61,9 +63,11 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Sound or vibrate on shake
 //	- After 1 shake block sensor for 1 sec - unregister
 //	- Font change?
+
 //	- Comment out all Toast
 //	- Hide Test options for later use
 //	- Options buttos to ll
+//	- Vibrate on 
 
 //BUG
 //	- Mute onPause 
@@ -179,6 +183,7 @@ public class Timer extends Activity implements OnClickListener,
 		clear.setOnClickListener(this);
 
 		pB1 = (ProgressBar) findViewById(R.id.progressBar1);
+		
 
 		// DEFAULT
 		roundLength = 3 * 60;
@@ -198,15 +203,26 @@ public class Timer extends Activity implements OnClickListener,
 		startText = (TextView) findViewById(R.id.tvStart_Pause);
 		startIcon = (TextView) findViewById(R.id.tvStartIcon);
 		startIcon.setTypeface(webSymbol);
+		
 
 		clearIcon = (TextView) findViewById(R.id.tvClearIcon);
 		clearIcon.setTypeface(webSymbol);
+		
 
 		optionsIcon = (TextView) findViewById(R.id.tvOptionsIcon);
 		optionsIcon.setTypeface(webSymbol);
+		
 
 		exitIcon = (TextView) findViewById(R.id.tvExitIcon);
 		exitIcon.setTypeface(webSymbol);
+		
+		//icon color
+//		startIcon.setTextColor(Color.parseColor("#33B5E5"));
+//		clearIcon.setTextColor(Color.parseColor("#33B5E5"));
+//		optionsIcon.setTextColor(Color.parseColor("#33B5E5"));
+//		exitIcon.setTextColor(Color.parseColor("#33B5E5"));
+//		startText.setTextColor(Color.parseColor("#33B5E5"));
+//		
 
 		// Wake lock
 		PowerManager pM = (PowerManager) getSystemService(Context.POWER_SERVICE);
