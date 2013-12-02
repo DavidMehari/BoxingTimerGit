@@ -38,7 +38,7 @@ public class MyCountDownTimer extends CountDownTimer {
 		timeLeft = millisUntilFinished;
 		
 		if(timeLeft < 5000 && !warningPlayed ){
-			Timer.soundPool.play(Timer.soundsMap.get(Timer.SOUND1), 1, 1, 1, 0, 1);
+			Timer.soundPool.play(Timer.soundsMap.get(Timer.SOUND4), 1, 1, 1, 0, 1);
 
 			warningPlayed = true;
 		}

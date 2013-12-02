@@ -54,7 +54,7 @@ public class Options extends Activity implements OnClickListener,
 
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
-	static int SOUND1 = 1;
+	static int SOUND1 = 1;	//alarm beep
 	
 	//Tabs
 	TabHost th;
@@ -140,7 +140,7 @@ public class Options extends Activity implements OnClickListener,
 		// soundpool
 		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 0);
 		soundsMap = new HashMap<Integer, Integer>();
-		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
+		soundsMap.put(SOUND1, soundPool.load(this, R.raw.alarm_beep, 1));
 
 		cbMute = (CheckBox) findViewById(R.id.cbMute);
 		cbSkipWU = (CheckBox) findViewById(R.id.cbSkipWarmUp);
@@ -213,7 +213,7 @@ public class Options extends Activity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		
 		switch (v.getId()) {
 		case R.id.bOK:
 			SharedPreferences.Editor editor = sPref.edit();
@@ -284,8 +284,6 @@ public class Options extends Activity implements OnClickListener,
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -297,27 +295,22 @@ public class Options extends Activity implements OnClickListener,
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		// TODO Auto-generated method stub
 		am.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
 
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		// TODO Auto-generated method stub
 
 		soundPool.play(soundsMap.get(SOUND1), 1, 1, 1, 0, 1);
 	}
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		// TODO Auto-generated method stub
 		switch (buttonView.getId()) {
 		case R.id.cbMute:
 			if (isChecked) {
@@ -356,7 +349,6 @@ public class Options extends Activity implements OnClickListener,
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		// because of setStreamMute bug
 		am.setStreamMute(AudioManager.STREAM_MUSIC, false);
@@ -364,7 +356,6 @@ public class Options extends Activity implements OnClickListener,
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 
 		init();

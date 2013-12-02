@@ -52,25 +52,26 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- ProgressBar color blue
 //	- Vibrate on shake
 //	- Exit prompt
+//	- Alarm at 5 just buzz
 
 //TODO
 
-//	- Exit? Quit? Close?
+
 //	- Run in Notification if counterStarted
 //	- Icon
 //	- Official Round length check (pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
-//	- Sounds
-//	- Alarm at 5 just buzz
-
+//	- Sounds - How many gongs???
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Test on different screen sizes
 //	- Shake sensitivity - now too sensitive on sony
-//	- Font change?
 
+
+//	- Exit? Quit? Close?
+//	- Font change?
 //	- Comment out all Toast
 //	- Hide Test options for later use
 //	- Option buttons to ll
-//	- Vibrate on 
+//	- Clean The code and resources
 
 //BUG
 //	- Mute onPause 
@@ -118,9 +119,10 @@ public class Timer extends Activity implements OnClickListener,
 
 	static SoundPool soundPool;
 	static HashMap<Integer, Integer> soundsMap;
-	static int SOUND1 = 1; // alert 5sec
+	static int SOUND1 = 1; // 
 	static int SOUND2 = 2; // end round
 	static int SOUND3 = 3; // start round
+	static int SOUND4 = 4; // start beep
 
 	SharedPreferences sPref;
 
@@ -237,6 +239,7 @@ public class Timer extends Activity implements OnClickListener,
 		soundsMap.put(SOUND1, soundPool.load(this, R.raw.boxingbellsingle, 1));
 		soundsMap.put(SOUND2, soundPool.load(this, R.raw.boxingbelldouble, 1));
 		soundsMap.put(SOUND3, soundPool.load(this, R.raw.boxingbell, 1));
+		soundsMap.put(SOUND4, soundPool.load(this, R.raw.alarm_beep, 1));
 
 		// Accelero
 		ax = ay = az = 0;
