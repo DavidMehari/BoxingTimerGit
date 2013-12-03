@@ -60,12 +60,14 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Shake sensitivity
 //	- Info Dialog in Timer Options
 //	- Run in Notification if counterStarted
+//	- fast paced workout
+//	- Text for info (timer settings)
 
 //TODO
 
 
 
-//	- pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
+//	- Admob is now test!!!
 //	- Sounds - How many gongs???
 //	- Test on different screen sizes
 
@@ -173,7 +175,7 @@ public class Timer extends Activity implements OnClickListener,
 
 		// AdMob
 		AdView av = (AdView) findViewById(R.id.advert);
-		av.loadAd(new AdRequest());
+		av.loadAd(new AdRequest().addTestDevice(AdRequest.TEST_EMULATOR));
 	}
 
 	private void initialize() {

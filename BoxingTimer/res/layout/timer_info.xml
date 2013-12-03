@@ -12,7 +12,7 @@
             android:id="@+id/timerInfo1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:text="Total Rounds"
             android:padding="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -21,13 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." />
+            android:text="Professional bouts are limited to a maximum of 12 rounds, most are fought over 4, 6, 8 or 10 rounds depending upon the experience of the boxers.\nAmateur bouts are 3 rounds of 3 minutes or 4 rounds of 2 minutes." />
 
         <TextView
             android:id="@+id/timerInfo2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:text="Round Length"
             android:padding="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -36,13 +36,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." />
+            android:text="Professional boxers will box 3 minute rounds. \nAmateur boxers will box 3 x 2 minute rounds. Males may box 4 x 2 minute rounds or 3 x 3 minute rounds by agreement. Females may box 4 x 2 minute rounds by agreement. In Open Championships and Internationals, males will box 3 x 3 minute rounds and females 4 x 2 minute rounds." />
          
          <TextView
             android:id="@+id/timerInfo3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Large Text"
+            android:text="Rest Length"
             android:padding="10dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -51,8 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum." />
-        
+			android:text="In every case there will be an interval of 1 minute rest between rounds. \nTip: If you want a fast paced workout, you can set the rest length to only 30 seconds." />        
     </LinearLayout>
     
 
