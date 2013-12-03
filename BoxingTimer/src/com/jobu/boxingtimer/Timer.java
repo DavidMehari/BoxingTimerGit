@@ -5,6 +5,9 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -56,18 +59,18 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Official Round length check
 //	- Shake sensitivity
 //	- Info Dialog in Timer Options
+//	- Run in Notification if counterStarted
 
 //TODO
 
 
-//	- Run in Notification if counterStarted
-//	- Icon
+
 //	- pro 3-1, amat 2-1 or kids 1,5-1? & 30sec rest for fast paced workout)
 //	- Sounds - How many gongs???
 //	- Test on different screen sizes
 
 
-
+//	- Icon
 //	- Exit? Quit? Close?
 //	- Grey & white textcolor (white for clickable/grey for text)
 //	- Font change?
@@ -151,6 +154,11 @@ public class Timer extends Activity implements OnClickListener,
 	private static final int SHAKE_THRESHOLD = 3500;
 	Sensor sensorAccelero;
 	final Handler handler = new Handler();
+	
+	 //StatusBar Notification
+	static NotificationManager nm;
+	static final int uniqueID = 1913456;
+	static Notification n;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -281,6 +289,8 @@ public class Timer extends Activity implements OnClickListener,
 			if (!counterEverStarted) {
 				startRound();
 				counterEverStarted = true;
+				
+				nm.notify(uniqueID, n);
 				break;
 			}
 
@@ -290,6 +300,8 @@ public class Timer extends Activity implements OnClickListener,
 				counterStarted = true;
 				startIcon.setText(Html.fromHtml("&#221;"));
 				startText.setText("Pause");
+				
+				nm.notify(uniqueID, n);
 
 			} else {
 				myCountDownTimer.cancel();
@@ -312,6 +324,9 @@ public class Timer extends Activity implements OnClickListener,
 				startText.setText("Resume");
 				counterStarted = false;
 				reseted = false;
+				
+				//notification
+				nm.cancel(uniqueID);
 			}
 			break;
 		case R.id.llClear:
@@ -344,6 +359,9 @@ public class Timer extends Activity implements OnClickListener,
 			startText.setText("Start");
 			pB1.setProgress(0);
 			start.setEnabled(true);
+			
+			//notification
+			nm.cancel(uniqueID);
 			break;
 
 		case R.id.llOptions:
@@ -451,6 +469,8 @@ public class Timer extends Activity implements OnClickListener,
 			roundsDisplay.setText("Finished!");
 			counterDisplay.setText("0:00");
 			start.setEnabled(false);
+			
+			nm.cancel(uniqueID);
 		}
 	}
 
@@ -544,6 +564,25 @@ public class Timer extends Activity implements OnClickListener,
 			sm.unregisterListener(this);
 		//	Toast.makeText(this, "unreg", Toast.LENGTH_SHORT).show();
 		}
+		
+		//Notification
+		nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		
+		//Notification
+		Intent intent = this.getIntent();
+		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+		PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+		
+		String title = "Boxing Timer";
+		String body = "You have started your workout!";
+		n = new Notification(R.drawable.notif_icon, body, System.currentTimeMillis());
+		n.setLatestEventInfo(this, title, body, pi);
+		
+		//to clear the notification as we return if timer is off
+		if (!counterStarted) {
+			nm.cancel(uniqueID);
+		}
+		
 
 	}
 
@@ -580,8 +619,6 @@ public class Timer extends Activity implements OnClickListener,
 
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
