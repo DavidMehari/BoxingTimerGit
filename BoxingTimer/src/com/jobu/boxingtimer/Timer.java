@@ -79,6 +79,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Comment out all Toast
 //	- Hide Test options for later use
 //	- Clean The code and resources
+//	- setmax -200 for full progress
 
 //BUG
 //	- Mute onPause 
