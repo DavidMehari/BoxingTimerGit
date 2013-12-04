@@ -67,10 +67,10 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 
 
-//	- Admob is now test!!!
 //	- Sounds - How many gongs???
 //	- Test on different screen sizes
-
+//	- Small screen not working -- options & exit hide
+//	- Screenshot on tablet
 
 //	- Icon
 //	- Exit? Quit? Close?
@@ -84,6 +84,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Mute onPause 
 
 //MAYBE LATER
+//	- Change Top Banner to bottom
 //	- Timer in landscape also?
 //	- Add more time variation
 //	- Templates
@@ -175,7 +176,7 @@ public class Timer extends Activity implements OnClickListener,
 
 		// AdMob
 		AdView av = (AdView) findViewById(R.id.advert);
-		av.loadAd(new AdRequest().addTestDevice(AdRequest.TEST_EMULATOR));
+		av.loadAd(new AdRequest());
 	}
 
 	private void initialize() {
