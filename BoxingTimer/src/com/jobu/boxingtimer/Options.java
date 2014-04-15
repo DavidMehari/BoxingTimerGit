@@ -171,9 +171,9 @@ public class Options extends Activity implements OnClickListener,
 		case 120:
 			rgRoundLength.check(R.id.rbroundLength2min);
 			break;
-		case 10:
-			rgRoundLength.check(R.id.rbroundLengthTest);
-			break;
+//		case 10:
+//			rgRoundLength.check(R.id.rbroundLengthTest);
+//			break;
 		}
 
 		switch (restLength) {
@@ -183,9 +183,9 @@ public class Options extends Activity implements OnClickListener,
 		case 30:
 			rgRestLength.check(R.id.rbrestLength30sec);
 			break;
-		case 10:
-			rgRestLength.check(R.id.rbrestLengthTest);
-			break;
+//		case 10:
+//			rgRestLength.check(R.id.rbrestLengthTest);
+//			break;
 		}
 		// setting the spinner state
 		spTotalRounds.setSelection(totalRounds - 1);
@@ -295,18 +295,18 @@ public class Options extends Activity implements OnClickListener,
 		case R.id.rbroundLength2min:
 			roundLength = 2 * 60;
 			break;
-		case R.id.rbroundLengthTest:
-			roundLength = 10;
-			break;
+//		case R.id.rbroundLengthTest:
+//			roundLength = 10;
+//			break;
 		case R.id.rbrestLength1min:
 			restLength = 1 * 60;
 			break;
 		case R.id.rbrestLength30sec:
 			restLength = 30;
 			break;
-		case R.id.rbrestLengthTest:
-			restLength = 10;
-			break;
+//		case R.id.rbrestLengthTest:
+//			restLength = 10;
+//			break;
 		}
 
 	}

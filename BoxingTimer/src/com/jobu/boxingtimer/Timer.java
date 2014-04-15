@@ -62,6 +62,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Run in Notification if counterStarted
 //	- fast paced workout
 //	- Text for info (timer settings)
+//	- Hide Test options for later use
 
 //TODO
 
@@ -72,12 +73,9 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 //	- Small screen not working -- options & exit hide
 //	- Screenshot on tablet
 
-//	- Icon
-//	- Exit? Quit? Close?
+
 //	- Grey & white textcolor (white for clickable/grey for text)
-//	- Font change?
-//	- Comment out all Toast
-//	- Hide Test options for later use
+
 //	- Clean The code and resources
 //	- setmax -200 for full progress
 
@@ -646,7 +644,7 @@ public class Timer extends Activity implements OnClickListener,
 
 				if (speed > SHAKE_THRESHOLD) {
 
-					Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
+				//	Toast.makeText(this, "shake detected w/ speed: " + speed,	Toast.LENGTH_SHORT).show();
 					start.performClick();
 					//Vibrate on move
 					Vibrator vb = (Vibrator)   getSystemService(Context.VIBRATOR_SERVICE);

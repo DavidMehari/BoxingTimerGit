@@ -116,7 +116,9 @@
                                 android:id="@+id/rbroundLengthTest"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Test" />
+                                android:text="Test"
+                                android:visibility="gone" />
+
                         </RadioGroup>
 
                         <TextView
@@ -151,7 +153,9 @@
                                 android:id="@+id/rbrestLengthTest"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Test" />
+                                android:text="Test"
+                                android:visibility="gone" />
+
                         </RadioGroup>
                     </LinearLayout>
 
